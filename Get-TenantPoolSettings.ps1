@@ -28,6 +28,7 @@ $results = foreach ($env in $rows) {
     # consumed is documented as a single object, but sum defensively in case several entries are returned
     $consumed = @($capacity.consumed | Where-Object { $null -ne $_ })
     $creditsConsumed = if ($consumed) { ($consumed.value | Measure-Object -Sum).Sum } else { $null }
+    $consumedLastUpdated = if ($consumed -and $consumed[0].lastUpdatedOn) { ([datetime]$consumed[0].lastUpdatedOn).ToUniversalTime().ToString('yyyy-MM-dd') } else { $null }
 
     [pscustomobject]@{
         environmentId                           = $env.environmentId
@@ -38,7 +39,7 @@ $results = foreach ($env in $rows) {
         'Credits.AutoAllocated'                 = $capacity.allocated.autoAllocated
         'Credits.Consumed'                      = $creditsConsumed
         'Credits.ConsumptionType'               = $consumed[0].consumptionType
-        'Credits.ConsumedLastUpdatedOn'         = if ($consumed[0].lastUpdatedOn) { ([datetime]$consumed[0].lastUpdatedOn).ToUniversalTime().ToString('yyyy-MM-dd') }
+        'Credits.ConsumedLastUpdatedOn'         = $consumedLastUpdated
         'Capacity.enforcementRules.TenantPool'  = $tenantPoolEnabled
         'Capacity.isTenantPoolGovernedByPolicy' = $capacity.isTenantPoolGovernedByPolicy
         'Capacity.status'                       = $capacity.status
