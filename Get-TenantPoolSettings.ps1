@@ -25,15 +25,23 @@ $results = foreach ($env in $rows) {
     # When the setting is checked the API omits/blanks "enabled"; only an explicit false means unchecked
     $tenantPoolEnabled = if ($null -eq $capacity) { $null } else { -not ($tenantPool.enabled -eq $false) }
 
+    # consumed is documented as a single object, but sum defensively in case several entries are returned
+    $consumed = @($capacity.consumed | Where-Object { $null -ne $_ })
+    $creditsConsumed = if ($consumed) { ($consumed.value | Measure-Object -Sum).Sum } else { $null }
+
     [pscustomobject]@{
-        environmentId                          = $env.environmentId
-        environmentType                        = $env.environmentType
-        environmentName                        = $env.environmentName
-        isManagedEnvironment                   = $env.isManagedEnvironment
-        'Capacity.allocated'                   = $capacity.allocated
-        'Capacity.enforcementRules.TenantPool' = $tenantPoolEnabled
+        environmentId                           = $env.environmentId
+        environmentType                         = $env.environmentType
+        environmentName                         = $env.environmentName
+        isManagedEnvironment                    = $env.isManagedEnvironment
+        'Credits.Limit'                         = $capacity.allocated.value
+        'Credits.AutoAllocated'                 = $capacity.allocated.autoAllocated
+        'Credits.Consumed'                      = $creditsConsumed
+        'Credits.ConsumptionType'               = $consumed[0].consumptionType
+        'Credits.ConsumedLastUpdatedOn'         = if ($consumed[0].lastUpdatedOn) { ([datetime]$consumed[0].lastUpdatedOn).ToUniversalTime().ToString('yyyy-MM-dd') }
+        'Capacity.enforcementRules.TenantPool'  = $tenantPoolEnabled
         'Capacity.isTenantPoolGovernedByPolicy' = $capacity.isTenantPoolGovernedByPolicy
-        'Capacity.status'                      = $capacity.status
+        'Capacity.status'                       = $capacity.status
     }
 }
 

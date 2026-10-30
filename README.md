@@ -19,11 +19,16 @@ GET https://api.powerplatform.com/licensing/environments/entitlements/MCSMessage
 | Field | Meaning |
 |---|---|
 | `Capacity.allocated` | Copilot Studio messages assigned directly to that environment |
+| `Credits.Limit` | Credits set as the environment's limit (`capacity.allocated.value`) |
+| `Credits.AutoAllocated` | Credits allocated automatically (`capacity.allocated.autoAllocated`) |
+| `Credits.Consumed` | Credits consumed so far (`capacity.consumed.value`), usually month-to-date |
+| `Credits.ConsumptionType` | How consumption is measured, for example `MonthToDate` |
+| `Credits.ConsumedLastUpdatedOn` | Date (UTC) the consumption figure was last updated |
 | `enforcementRules` → `TenantPool` | Whether the environment can use the tenant-wide shared pool of messages beyond its own allocation. This is the checkbox in the admin center capacity settings. |
 | `isTenantPoolGovernedByPolicy` | Whether that pool setting is controlled by a policy rather than set on the environment itself |
 | `Capacity.status` | The environment's capacity state, for example whether it's within or over its allocation |
 
-The CSV also includes `environmentId`, `environmentType`, `environmentName` and `isManagedEnvironment`.
+The CSV also includes `environmentId`, `environmentType`, `environmentName` and `isManagedEnvironment`. `Capacity.allocated` is split into the `Credits.Limit` and `Credits.AutoAllocated` columns.
 
 > **Note:** The API leaves `enabled` blank when the TenantPool setting is checked and returns `false` only when it's unchecked. The script writes `True` or `False` accordingly. The column is blank only when an environment has no capacity data.
 
