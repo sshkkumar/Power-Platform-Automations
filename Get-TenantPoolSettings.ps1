@@ -1,5 +1,5 @@
 ﻿#Install-Module -Name Microsoft.PowerApps.Administration.PowerShell
-
+Set-ExecutionPolicy RemoteSigned -Scope LocalMachine
  Import-Module -Name Microsoft.PowerApps.Administration.PowerShell -ErrorAction Stop
 
 $apiBaseUrl = 'https://api.powerplatform.com'
